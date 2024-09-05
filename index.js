@@ -65,7 +65,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         username: id["username"],
         description: updatedExercise.log[updatedExercise.log.length - 1].description,
         duration: updatedExercise.log[updatedExercise.log.length - 1].duration,
-        date: updatedExercise.log[updatedExercise.log.length - 1].date,
+        date: updatedExercise.log[updatedExercise.log.length - 1].date.toDateString(),
       });
     } else {
       // If exercise entry does not exist, create a new one
@@ -86,7 +86,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
         _id: result._id,
         description: result.log[0].description,
         duration: result.log[0].duration,
-        date: result.log[0].date,
+        date: result.log[0].date.toDateString(),
       });
     }
   } catch (err) {
