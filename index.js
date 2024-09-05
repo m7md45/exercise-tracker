@@ -62,8 +62,8 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
       res.json({
         _id: updatedExercise._id,
-        description:
-          updatedExercise.log[updatedExercise.log.length - 1].description,
+        username: id["username"],
+        description: updatedExercise.log[updatedExercise.log.length - 1].description,
         duration: updatedExercise.log[updatedExercise.log.length - 1].duration,
         date: updatedExercise.log[updatedExercise.log.length - 1].date,
       });
@@ -100,6 +100,50 @@ app.get("/api/users", async (req, res) => {
   res.json(users);
 })
 
+app.get("/api/users/:_id/logs", async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const name = await User.findById(_id);
+    const { from, to, limit } = req.query;
+
+    // Find the user by ID
+    const exerciseEntry = await Exercise.findById(_id);
+    if (!exerciseEntry) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    let logs = exerciseEntry.log;
+
+    // Filter by date range if 'from' and 'to' are provided
+    if (from || to) {
+      const fromDate = from ? new Date(from) : new Date(0); // Use epoch as a default "from" date
+      const toDate = to ? new Date(to) : new Date(); // Use current date as a default "to" date
+
+      logs = logs.filter(log => {
+        const logDate = new Date(log.date);
+        return logDate >= fromDate && logDate <= toDate;
+      });
+    }
+
+    if (limit) {
+      logs = logs.slice(0, parseInt(limit));
+    }
+
+    res.json({
+      _id: exerciseEntry._id,
+      username: name["username"],
+      count: logs.length,
+      log: logs.map(log => ({
+        description: log.description,
+        duration: log.duration,
+        date: log.date.toDateString(),
+      })),
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log('Your app is listening on port ' + listener.address().port)
