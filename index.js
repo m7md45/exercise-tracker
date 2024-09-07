@@ -37,10 +37,11 @@ app.post("/api/users", async (req, res) => {
 });
 
 app.post("/api/users/:_id/exercises", async (req, res) => {
-  const id = await User.findById(req.body[":_id"]);
+  const id = await User.findById(req.params);
+  console.log(id);
   const description = req.body.description;
   const duration = req.body.duration;
-  console.log(id)
+  console.log(id);
 
   let date;
   if (!req.body.date) {
@@ -50,9 +51,9 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   }
 
   try {
-    console.log(id)
+    console.log(id["_id"]);
     let exerciseEntry = await Exercise.findById(id["_id"]);
-
+    
     if (exerciseEntry) {
       // If exercise entry exists, push new log entry to the log array
       exerciseEntry.log.push({
