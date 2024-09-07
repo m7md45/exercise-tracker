@@ -7,8 +7,8 @@ const exerciseSchema = new Schema({
   log: [{
     _id: false,
     description: { type: String, required: true },
-    duration: { type: String, required: true },
-    date: { type: Date }
+    duration: { type: Number, required: true },
+    date: { type: String }
   }]
 }, {collection: "exercise"}, {versionKey: false});
 

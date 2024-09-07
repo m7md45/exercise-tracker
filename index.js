@@ -40,14 +40,17 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = await User.findById(req.body[":_id"]);
   const description = req.body.description;
   const duration = req.body.duration;
+  console.log(id)
+
   let date;
   if (!req.body.date) {
-    date = new Date();
+    date = new Date().toDateString();
   } else {
-    date = new Date(req.body.date);
+    date = new Date(req.body.date).toDateString();
   }
 
   try {
+    console.log(id)
     let exerciseEntry = await Exercise.findById(id["_id"]);
 
     if (exerciseEntry) {
@@ -63,9 +66,9 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       res.json({
         _id: updatedExercise._id,
         username: id["username"],
-        description: updatedExercise.log[updatedExercise.log.length - 1].description,
+        date: updatedExercise.log[updatedExercise.log.length - 1].date,
         duration: updatedExercise.log[updatedExercise.log.length - 1].duration,
-        date: updatedExercise.log[updatedExercise.log.length - 1].date.toDateString(),
+        description: updatedExercise.log[updatedExercise.log.length - 1].description,
       });
     } else {
       // If exercise entry does not exist, create a new one
@@ -84,9 +87,10 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
 
       res.json({
         _id: result._id,
+        username: id["username"],
         description: result.log[0].description,
         duration: result.log[0].duration,
-        date: result.log[0].date.toDateString(),
+        date: result.log[0].date,
       });
     }
   } catch (err) {
@@ -136,7 +140,7 @@ app.get("/api/users/:_id/logs", async (req, res) => {
       log: logs.map(log => ({
         description: log.description,
         duration: log.duration,
-        date: log.date.toDateString(),
+        date: log.date,
       })),
     });
   } catch (err) {
